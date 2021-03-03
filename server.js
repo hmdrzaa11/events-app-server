@@ -1,11 +1,11 @@
-import app from "./index.js";
-import path, { dirname } from "path";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import { fileURLToPath } from "url";
+let app = require("./index.js");
+let path = require("path");
+let mongoose = require("mongoose");
+let dotenv = require("dotenv");
+
 //.env config
 dotenv.config({
-  path: fileURLToPath(path.join(dirname(import.meta.url), ".env")),
+  path: path.join(__dirname, ".env"),
 });
 let PORT = process.env.PORT || 8000;
 //db connection

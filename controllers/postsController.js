@@ -1,19 +1,15 @@
-import catchAsync from "../utils/catchAsync.js";
-import AppError from "../utils/AppError.js";
-import deletePic from "../utils/deletePic.js";
-import Post from "../models/Post.js";
-import multer from "multer";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+let catchAsync = require("../utils/catchAsync.js");
+let AppError = require("../utils/AppError.js");
+let deletePic = require("../utils/deletePic.js");
+let Post = require("../models/Post.js");
+let multer = require("multer");
+let path = require("path");
 
 //***************************** Multer *******************************/
 
 let multerStorage = multer.diskStorage({
   destination(req, file, cb) {
-    let filePath = path.join(
-      fileURLToPath(dirname(import.meta.url)),
-      "../public/images/events"
-    );
+    let filePath = path.join(__dirname, "../public/images/events");
     cb(null, filePath);
   },
   filename(req, file, cb) {
@@ -34,12 +30,12 @@ let fileFilter = (req, file, cb) => {
   }
 };
 
-export let upload = multer({
+exports.upload = multer({
   storage: multerStorage,
   fileFilter: fileFilter,
 });
 
-export let getAllPosts = catchAsync(async (req, res, next) => {
+exports.getAllPosts = catchAsync(async (req, res, next) => {
   let allPosts = await Post.find();
   res.status(200).json({
     status: "success",
@@ -47,7 +43,7 @@ export let getAllPosts = catchAsync(async (req, res, next) => {
   });
 });
 
-export let createPost = catchAsync(async (req, res, next) => {
+exports.createPost = catchAsync(async (req, res, next) => {
   req.body.image = req.file ? req.file.filename : "default.jpg";
   let post = await Post.create(req.body);
   res.status(201).json({
@@ -56,7 +52,7 @@ export let createPost = catchAsync(async (req, res, next) => {
   });
 });
 
-export let updatePost = catchAsync(async (req, res, next) => {
+exports.updatePost = catchAsync(async (req, res, next) => {
   let data = Object.assign(req.body);
   let post = await Post.findById(req.params.postId);
   if (!post) {
@@ -80,7 +76,7 @@ export let updatePost = catchAsync(async (req, res, next) => {
   });
 });
 
-export let deleteEvent = catchAsync(async (req, res, next) => {
+exports.deleteEvent = catchAsync(async (req, res, next) => {
   let post = await Post.findByIdAndDelete(req.params.postId);
 
   if (!post) {
@@ -94,7 +90,7 @@ export let deleteEvent = catchAsync(async (req, res, next) => {
   });
 });
 
-export let getSinglePost = catchAsync(async (req, res, next) => {
+exports.getSinglePost = catchAsync(async (req, res, next) => {
   let post = await Post.findById(req.params.postId);
   if (!post) {
     return next(new AppError("no event related to this id", 404));
@@ -104,3 +100,5 @@ export let getSinglePost = catchAsync(async (req, res, next) => {
     post,
   });
 });
+
+exports.addLikes = catchAsync(async (req, res, next) => {});

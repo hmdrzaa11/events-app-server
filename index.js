@@ -1,10 +1,11 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import postRouter from "./routes/posts.js";
-import errorController from "./controllers/errorController.js";
-import { fileURLToPath } from "url";
-import path, { dirname } from "path";
+let express = require("express");
+let path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+let bodyParser = require("body-parser");
+let cors = require("cors");
+let postRouter = require("./routes/posts.js");
+let userRouter = require("./routes/users.js");
+let errorController = require("./controllers/errorController.js");
 
 let app = express();
 
@@ -14,14 +15,13 @@ app.use(cors());
 app.use(bodyParser.json({ limit: "30mb" }));
 
 //public
-app.use(
-  express.static(path.join(fileURLToPath(dirname(import.meta.url)), "public"))
-);
+app.use(express.static(path.join(__dirname, "public")));
 
 //routes
 app.use("/api/v1/posts", postRouter);
+app.use("/api/v1/users", userRouter);
 
 //error handler
 app.use(errorController);
 
-export default app;
+module.exports = app;

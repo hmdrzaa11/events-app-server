@@ -1,10 +1,7 @@
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
+let path = require("path");
+let fs = require("fs");
 
-let newDirname = fileURLToPath(dirname(import.meta.url));
-
-export default async function deletePic(imageName) {
-  let imageUrl = path.join(newDirname, `../public/images/events/${imageName}`);
+module.exports = async function deletePic(imageName) {
+  let imageUrl = path.join(__dirname, `../public/images/events/${imageName}`);
   await fs.promises.unlink(imageUrl);
-}
+};

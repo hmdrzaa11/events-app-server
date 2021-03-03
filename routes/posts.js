@@ -1,21 +1,28 @@
-import express from "express";
-import {
+let express = require("express");
+let {
   createPost,
   getAllPosts,
   upload,
   updatePost,
   deleteEvent,
   getSinglePost,
-} from "../controllers/postsController.js";
+  addLikes,
+} = require("../controllers/postsController.js");
+let isAuthenticated = require("../middlewares/isAuthenticated.js");
 
 let postRouter = express.Router();
 
-postRouter.route("/").get(getAllPosts).post(upload.single("image"), createPost);
+postRouter
+  .route("/")
+  .get(getAllPosts)
+  .post(isAuthenticated, upload.single("image"), createPost);
+
+postRouter.patch("/:postId/like", addLikes);
 
 postRouter
   .route("/:postId")
-  .patch(upload.single("image"), updatePost)
-  .delete(deleteEvent)
+  .patch(isAuthenticated, upload.single("image"), updatePost)
+  .delete(isAuthenticated, deleteEvent)
   .get(getSinglePost);
 
-export default postRouter;
+module.exports = postRouter;

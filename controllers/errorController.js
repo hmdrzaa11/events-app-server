@@ -1,4 +1,4 @@
-import AppError from "../utils/AppError.js";
+let AppError = require("../utils/AppError.js");
 
 let handleValueErrors = (err) => {
   let message = Object.values(err.errors)
@@ -8,9 +8,22 @@ let handleValueErrors = (err) => {
   return error;
 };
 
-export default (err, req, res, next) => {
+let handleInvalidToken = (err) => {
+  return new AppError("invalid token please login again", 402);
+};
+let handleTokenExpire = (err) => {
+  return new AppError("invalid token please login again", 402);
+};
+
+module.exports = (err, req, res, next) => {
   if (err.name === "ValidationError") {
     err = handleValueErrors(err);
+  }
+  if (err.name === "JsonWebTokenError") {
+    err = handleInvalidToken(err);
+  }
+  if (err.name === "TokenExpiredError") {
+    err = handleTokenExpire(err);
   }
   let statusCode = err.statusCode || 500;
   let responseStatus = err.status || "Error";
