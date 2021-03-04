@@ -4,6 +4,7 @@ let deletePic = require("../utils/deletePic.js");
 let Post = require("../models/Post.js");
 let multer = require("multer");
 let path = require("path");
+let fs = require("fs");
 
 //***************************** Multer *******************************/
 
@@ -45,6 +46,7 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
 
 exports.createPost = catchAsync(async (req, res, next) => {
   req.body.image = req.file ? req.file.filename : "default.jpg";
+  req.body.author = req.userId;
   let post = await Post.create(req.body);
   res.status(201).json({
     status: "success",
@@ -54,7 +56,7 @@ exports.createPost = catchAsync(async (req, res, next) => {
 
 exports.updatePost = catchAsync(async (req, res, next) => {
   let data = Object.assign(req.body);
-  let post = await Post.findById(req.params.postId);
+  let post = await Post.findOne({ _id: req.params.postId, author: req.userId });
   if (!post) {
     return next(new AppError("no event related to this id", 404));
   }
@@ -77,8 +79,10 @@ exports.updatePost = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteEvent = catchAsync(async (req, res, next) => {
-  let post = await Post.findByIdAndDelete(req.params.postId);
-
+  let post = await Post.findOneAndDelete({
+    _id: req.params.postId,
+    author: req.userId,
+  });
   if (!post) {
     return next(new AppError("no event related to this id", 404));
   }

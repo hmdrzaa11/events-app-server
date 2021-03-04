@@ -2,6 +2,7 @@ let jwt = require("jsonwebtoken");
 let AppError = require("../utils/AppError.js");
 let catchAsync = require("../utils/catchAsync.js");
 let User = require("../models/User");
+const GoogleUser = require("../models/GoogleUser.js");
 
 module.exports = catchAsync(async (req, res, next) => {
   let token;
@@ -29,10 +30,11 @@ module.exports = catchAsync(async (req, res, next) => {
       return next(new AppError("there is no user related to this token", 402));
     }
 
-    req.userId = user._id;
+    req.userId = user._id; //store the user in the req
     next();
   } else {
-    //in this case its probably google token we can decode it
+    //in this case its probably google token we can decode it and check the db for the user if there is a user already attach that to the req
+    //if there is not you carate a new user with that id
     let data = jwt.decode(token);
     if (!data) {
       return next(new AppError("invalid token please login again", 402));
